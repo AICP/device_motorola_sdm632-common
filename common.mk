@@ -42,14 +42,6 @@ PRODUCT_ENFORCE_RRO_TARGETS := \
     framework-res
 
 # A/B updater
-AB_OTA_UPDATER := true
-
-AB_OTA_PARTITIONS += \
-    boot \
-    dtbo \
-    system \
-    vendor
-
 AB_OTA_POSTINSTALL_CONFIG += \
     RUN_POSTINSTALL_system=true \
     POSTINSTALL_PATH_system=system/bin/otapreopt_script \
@@ -111,6 +103,9 @@ PRODUCT_PACKAGES += \
     android.hardware.bluetooth.audio@2.0-impl:32 \
     libbt-vendor \
     vendor.qti.hardware.btconfigstore@1.0.vendor
+
+# Boot animation
+TARGET_BOOTANIMATION_HALF_RES := true
 
 # Boot control HAL
 PRODUCT_PACKAGES += \
@@ -417,9 +412,6 @@ PRODUCT_BOOT_JARS += \
 # Tethering
 PRODUCT_PACKAGES += \
     TetheringConfigOverlay
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    net.tethering.noprovisioning=true
 
 # Thermal
 PRODUCT_PACKAGES += \
