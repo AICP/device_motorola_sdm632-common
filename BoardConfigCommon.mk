@@ -56,6 +56,11 @@ AB_OTA_PARTITIONS += \
     system \
     vendor
 
+# Properties
+TARGET_PRODUCT_PROP += $(PLATFORM_PATH)/product.prop
+TARGET_SYSTEM_PROP += $(PLATFORM_PATH)/system.prop
+TARGET_VENDOR_PROP += $(PLATFORM_PATH)/vendor.prop
+
 # Audio
 BOARD_USES_ALSA_AUDIO := true
 BOARD_SUPPORTS_SOUND_TRIGGER_HAL := true
