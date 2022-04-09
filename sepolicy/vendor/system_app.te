@@ -1,3 +1,4 @@
+get_prop(system_app, hwrev_prop)
 get_prop(system_app, vendor_fm_prop)
 
 binder_call(system_app, wificond)
@@ -17,3 +18,5 @@ dontaudit system_app {
 }:service_manager find;
 
 binder_call(system_app, hal_power_default)
+allow system_app hal_power_default:binder call;
+allow system_app proc_vmallocinfo:file { getattr open read };

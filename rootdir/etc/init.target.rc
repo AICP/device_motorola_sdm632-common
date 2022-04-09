@@ -41,16 +41,16 @@ on init
     setprop ro.vendor.hw.dualsim ${ro.boot.dualsim}
     setprop ro.vendor.hw.device ${ro.boot.device}
     setprop ro.vendor.hw.radio ${ro.boot.radio}
-    setprop ro.vendor.hw.hwrev ${ro.boot.hwrev}
     setprop ro.vendor.hw.revision ${ro.boot.revision}
     setprop ro.vendor.carrier ${ro.boot.carrier}
     setprop ro.vendor.boot.cid ${ro.boot.cid}
     setprop ro.vendor.boot.radio ${ro.boot.radio}
-    setprop ro.vendor.boot.hwrev ${ro.boot.hwrev}
     setprop ro.vendor.boot.powerup_reason ${ro.boot.powerup_reason}
     setprop ro.vendor.boot.bl_state ${ro.boot.bl_state}
     setprop ro.vendor.boot.serialno ${ro.boot.serialno}
     setprop ro.vendor.zygote ${ro.zygote}
+
+    setprop ro.vendor.hw.hwrev ${ro.boot.hwrev}
 
 # Translate MMI property in order to keep consistent with QCOM
 on property:ro.vendor.hw.dualsim=true
@@ -63,7 +63,7 @@ on fs
     wait /dev/block/platform/soc/${ro.boot.bootdevice}
     symlink /dev/block/platform/soc/${ro.boot.bootdevice} /dev/block/bootdevice
 
-    mount_all /vendor/etc/fstab.qcom --early
+    mount_all /vendor/etc/fstab.qcom
     write /proc/sys/vm/swappiness 100
 
     chown root system /mnt/vendor/persist
@@ -78,23 +78,6 @@ on fs
 
     #wait /dev/block/bootdevice/by-name/oem
     #mount ext4 /dev/block/bootdevice/by-name/oem /oem ro nosuid nodev barrier=1
-
-on late-fs
-    # Start services for bootanim
-    start servicemanager
-    start surfaceflinger
-    start bootanim
-
-    start vendor.configstore-hal
-    start vendor.gralloc-2-0
-
-    # Wait for hwservicemanager ready since fsck might be triggered in mount_all --late
-    # In such case, init won't responce the property_set from hwservicemanager and then
-    # cause services for bootanim not running.
-    wait_for_prop hwservicemanager.ready true
-
-    # mount RW partitions which need run fsck
-    mount_all /vendor/etc/fstab.qcom --late
 
 on post-fs
     start vendor.qseecomd
@@ -115,7 +98,6 @@ on post-fs-data
     mkdir /mnt/vendor/persist/data/tz 0700 system system
     mkdir /data/misc/dts 0770 media audio
 #    mkdir /data/vendor/hbtp 0750 system system
-    mkdir /data/vendor/tloc 0700 system drmrpc
 
 
 #Create folder for mm-qcamera-daemon
@@ -140,13 +122,6 @@ service qfp-daemon /system/vendor/bin/qfp-daemon
    class late_start
    user system
    group system drmrpc
-
-# Allow usb charging to be disabled peristently
-on property:persist.usb.chgdisabled=1
-    write /sys/class/power_supply/battery/charging_enabled 0
-
-on property:persist.usb.chgdisabled=0
-    write /sys/class/power_supply/battery/charging_enabled 1
 
 # FM
 on property:hw.fm.init=0
@@ -211,7 +186,7 @@ on boot
 # Add a cpuset for the camera daemon
 # We want all cores for camera
     mkdir /dev/cpuset/camera-daemon
-    write /dev/cpuset/camera-daemon/cpus 0-3
+    write /dev/cpuset/camera-daemon/cpus 4-7
     write /dev/cpuset/camera-daemon/mems 0
     chown cameraserver cameraserver /dev/cpuset/camera-daemon
     chown cameraserver cameraserver /dev/cpuset/camera-daemon/tasks
@@ -308,18 +283,6 @@ on property:init.svc.zygote=running
 on property:init.svc.zygote=restarting
     stop ppd
 
-service dts_configurator /system/vendor/bin/dts_configurator
-    class late_start
-    user system
-    group media audio
-    oneshot
-
-service dtseagleservice /system/vendor/bin/dts_eagle_service
-    class late_start
-    user system
-    group audio media
-    disabled
-
 service adsprpcd /system/vendor/bin/adsprpcd
     class main
     user media
@@ -329,9 +292,6 @@ service vendor.hvdcp_opti /system/vendor/bin/hvdcp_opti
    class main
    user root
    group system wakelock
-
-on property:init.svc.dts_configurator=stopped
-    start dtseagleservice
 
 service vendor.per_mgr /system/vendor/bin/pm-service
     class core
