@@ -58,6 +58,16 @@ on init
     chown root system /sys/fs/cgroup/memory/bg/tasks
     chmod 0660 /sys/fs/cgroup/memory/bg/tasks
 
+    # Battery Health
+    chown system system /sys/class/power_supply/bms/charge_full_design
+    chmod 0644 /sys/class/power_supply/bms/charge_full_design
+    chown system system /sys/class/power_supply/bms/charge_full
+    chmod 0644 /sys/class/power_supply/bms/charge_full
+    chown system system /sys/class/power_supply/battery/cycle_count
+    chmod 0644 /sys/class/power_supply/battery/cycle_count
+    chown system system /sys/class/power_supply/battery/age
+    chmod 0644 /sys/class/power_supply/battery/age
+
 on post-fs
     chmod 0755 /sys/kernel/debug/tracing
 
