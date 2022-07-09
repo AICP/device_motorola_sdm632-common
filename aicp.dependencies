@@ -1,8 +1,7 @@
 [
   {
     "repository": "AICP/kernel_motorola_sdm632",
-    "target_path": "kernel/motorola/sdm632",
-    "branch": "s12.1"
+    "target_path": "kernel/motorola/sdm632"
   },
   {
     "repository": "LineageOS/android_external_bson",
@@ -11,8 +10,7 @@
   },
   {
     "repository": "AICP/hardware_motorola",
-    "target_path": "hardware/motorola",
-    "branch":      "r12.1"
+    "target_path": "hardware/motorola"
   },
   {
     "repository": "LineageOS/android_system_qcom",
